@@ -22,7 +22,7 @@ jobs:
     - name: Upload project to Namecheap
       run: |
         # Elimina el contenido actual en el directorio del servidor remoto
-        ssh -p 2083 -o StrictHostKeyChecking=no greesvkm@greenfieldteam.net "rm -rf /home/greesvkm/public_html/midstorage/*"
+        ssh -p 2083 -o StrictHostKeyChecking=no greesvkm@greenfieldteam.net "rm -rf /home/greesvkm/recorridos.greenfieldteam.net/midstorage/*"
         
         # Sube el contenido del proyecto a la carpeta especificada en el servidor
-        scp -p 2083 -r ./testShapesparkCI-CD/* greesvkm@greenfieldteam.net:/home/greesvkm/public_html/midstorage/
+        scp -p 2083 -r ./testShapesparkCI-CD/* greesvkm@greenfieldteam.net:/home/greesvkm/recorridos.greenfieldteam.net/midstorage/
