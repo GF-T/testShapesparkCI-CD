@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Interactive 3D walkthrough">
+
+  <link rel="icon" href="2024-09-27-15-22-03/favicon.ico">
+
+  <meta property="og:image" content="2024-09-27-15-22-03/thumbnail.jpg" />
+
+  <link href="2024-09-27-15-22-03/webwalk/style.css" rel="stylesheet" type="text/css">
+
+  <style>
+    @font-face {
+      font-family: 'Open Sans';
+      font-style: normal;
+      font-weight: 400;
+      src: local('Open Sans'), local('OpenSans'),
+      url('2024-09-27-15-22-03/webwalk/font/open-sans-v28-vietnamese_latin-ext_latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('2024-09-27-15-22-03/webwalk/font/open-sans-v28-vietnamese_latin-ext_latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+    }
+
+    /* Original font awesome font-family names have been replaced to not rely on
+       font-weight when determining actual symbol, as it didn't work well
+       when rendering using 2D canvas features, and also to avoid spaces in
+       the names. */
+
+    @font-face {
+      font-family: 'FontAwesomeBrands';
+      src: url("2024-09-27-15-22-03/webwalk/font/fa-brands-400.woff2") format("woff2"),
+           url("2024-09-27-15-22-03/webwalk/font/fa-brands-400.woff") format("woff"); }
+
+    @font-face {
+      font-family: 'FontAwesomeRegular';
+      src: url("2024-09-27-15-22-03/webwalk/font/fa-regular-400.woff2") format("woff2"),
+           url("2024-09-27-15-22-03/webwalk/font/fa-regular-400.woff") format("woff"); }
+
+    @font-face {
+      font-family: 'FontAwesomeSolid';
+      src: url("2024-09-27-15-22-03/webwalk/font/fa-solid-900.woff2") format("woff2"),
+           url("2024-09-27-15-22-03/webwalk/font/fa-solid-900.woff") format("woff"); }
+
+    #cover-image {
+      background-image: url("2024-09-27-15-22-03/cover.jpg");
+    }
+
+    .ext-popup-close-button {
+      background-image: url("2024-09-27-15-22-03/webwalk/img/close.svg");
+    }
+  </style>
+
+  <title>3D scene</title>
+</head>
+
+<body>
+  <noscript>
+    <div class="message error-message absolute-center">
+      Explore this interactive 3D walkthrough on desktop and mobile
+      devices or with a Virtual Reality headset. To start the virtual
+      tour just click the play button. You don't need to install any
+      application, but you need to enable JavaScript in your browser.
+    </div>
+  </noscript>
+
+  <div id="cover-image">
+  </div>
+
+  <!-- tabindex allows to give the canvas keyboard focus with a
+         focus() function -->
+  <canvas id="walk-canvas" tabindex="-1">
+  </canvas>
+
+  <div id="info-message" class="message info-message" style="display: none">
+  </div>
+
+  <div id="error-message" class="message error-message absolute-center"
+       style="display: none">
+  </div>
+
+  <!-- Error messages in old IEs can not be shown from JS, because old
+       IEs fail to parse new JS constructs -->
+  <!--[if lte IE 9]>
+      <div class="message error-message absolute-center">
+        Old versions of the Internet Explorer browser do not support
+        <a href="https://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation"
+           target="_blank">
+          WebGL</a>.
+        <br/>
+        <a href="https://get.webgl.org/" target="_blank">
+          Find out how to get it.</a>
+      </div>
+  <![endif]-->
+
+  <div id="info-bar" class="ui-top ui-left">
+    <div id="info-bar-slide">
+      <a id="author-logo" class="info-item ui-panel"
+         style="display: none"
+         target="_blank">
+        <img>
+      </a><!-- NS = no spaces
+   --><div id="info-text" class="info-item ui-panel" style="display: none">
+        <div>
+          <div id="info-title"></div>
+        </div>
+        <div>
+          <a id="info-author" target="_blank"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="menu-bar" class="ui-bottom ui-right">
+    <div id="menu-bar-slide">
+      <div id="menu-bar-folder" class="menu-item ui-hoverable ui-panel"
+           style="display: none">
+        <img src="2024-09-27-15-22-03/webwalk/img/fold-horizontal.svg">
+      </div><!-- NS
+   --><div id="menu-bar-content">
+        <div id="menu-buttons" style="display: none">
+          <div id="help-button"
+               class="menu-button menu-item ui-hoverable ui-panel">
+            ?
+          </div><!-- NS
+       --><div id="minimap-button-toggle"
+               class="menu-button menu-item ui-hoverable ui-panel"
+               style="display:none">
+            <img src="2024-09-27-15-22-03/webwalk/img/map.svg">
+          </div><!-- NS
+       --><div id="tour-button"
+               class="menu-button menu-item ui-hoverable ui-panel"
+               style="display: none">
+            <img src="2024-09-27-15-22-03/webwalk/img/tour.svg">
+          </div><!-- NS
+       --><div id="vr-button"
+               class="vr-specific menu-button menu-item ui-hoverable ui-panel"
+               style="display: none">
+            VR
+          </div><!-- NS
+       --><div id="fullscreen-button"
+               class="fullscreen-specific menu-button menu-item ui-hoverable
+                      ui-panel"
+               style="display: none">
+            <img src="2024-09-27-15-22-03/webwalk/img/fullscreen.svg">
+          </div>
+        </div><!-- NS
+     --><a id="engine-logo" class="menu-item ui-panel" style="display: none"
+           href="https://www.shapespark.com" target="_blank">
+          <div id="engine-logo-text" style="display: none"></div><!-- NS
+       --><img src="2024-09-27-15-22-03/webwalk/img/shapespark-logo.svg">
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-list" class="ui-top ui-right" style="display: none">
+    <div id="view-list-slide">
+      <div id="view-list-items" class="ui-scrollbar">
+        <div class="view ui-hoverable ui-panel"></div>
+      </div>
+      <div id="view-list-folder" class="ui-folder-vertical ui-hoverable ui-panel">
+        <img src="2024-09-27-15-22-03/webwalk/img/fold-vertical.svg">
+      </div>
+    </div>
+  </div>
+
+  <div id="minimap-container" class="minimap-container-default" style="display: none">
+    <div id="minimap-wrapper" class="minimap-wrapper-default">
+      <div id="minimap-button-close" class="minimap-button minimap-button-close">
+        <img src="2024-09-27-15-22-03/webwalk/img/close.svg">
+      </div>
+      <div id="minimap-button-minimize" class="minimap-button minimap-button-minimize">
+        <img src="2024-09-27-15-22-03/webwalk/img/minimize.svg">
+      </div>
+      <div id="minimap-button-maximize" class="minimap-button minimap-button-maximize">
+        <img src="2024-09-27-15-22-03/webwalk/img/maximize.svg">
+      </div>
+      <div id="minimap-content-wrapper" class="minimap-content-wrapper">
+        <div id="minimap-content" class="minimap-content"></div>
+      </div>
+      <div id="minimap-tabs" class="minimap-tabs-default" style="display: none"></div>
+    </div>
+  </div>
+
+  <div id="view-mode" class="ui-top ui-left" style="display: none">
+    <div id="view-mode-slide">
+      <div class="view-mode-container">
+        <div id="view-mode-top"
+             class="menu-item view-mode-item ui-hoverable ui-panel">
+          <img src="2024-09-27-15-22-03/webwalk/img/view-mode-top.svg">
+        </div>
+        <div id="view-mode-front"
+             class="menu-item view-mode-item ui-hoverable ui-panel">
+          <img src="2024-09-27-15-22-03/webwalk/img/view-mode-front.svg">
+        </div>
+        <div id="view-mode-left"
+             class="menu-item view-mode-item ui-hoverable ui-panel">
+          <img src="2024-09-27-15-22-03/webwalk/img/view-mode-left.svg">
+        </div>
+        <div id="view-mode-fps"
+             class="menu-item view-mode-item ui-hoverable ui-panel">
+          <img src="2024-09-27-15-22-03/webwalk/img/view-mode-fps.svg">
+        </div>
+      </div>
+      <div class="view-mode-container">
+        <div id="view-mode-persp"
+             class="menu-item view-mode-item ui-hoverable ui-panel">
+          <img src="2024-09-27-15-22-03/webwalk/img/view-mode-persp.svg">
+        </div>
+        <div id="view-mode-ortho"
+             class="menu-item view-mode-item ui-hoverable ui-panel">
+          <img src="2024-09-27-15-22-03/webwalk/img/view-mode-ortho.svg">
+        </div>
+      </div>
+      <div class="view-mode-container">
+        <div id="view-mode-color"
+             class="menu-item view-mode-item ui-hoverable ui-panel">
+          <img src="2024-09-27-15-22-03/webwalk/img/view-mode-color.svg">
+        </div>
+        <div id="view-mode-wireframe-opaque"
+             class="menu-item view-mode-item ui-hoverable ui-panel">
+          <img src="2024-09-27-15-22-03/webwalk/img/view-mode-wireframe-opaque.svg">
+        </div>
+        <div id="view-mode-wireframe-transparent"
+             class="menu-item view-mode-item ui-hoverable ui-panel">
+          <img src="2024-09-27-15-22-03/webwalk/img/view-mode-wireframe-transparent.svg">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <img id="play-button" class="absolute-center" src="2024-09-27-15-22-03/webwalk/img/play.svg"
+       style="display: none">
+
+  <div id='interaction-prompt' class="ui-all-center ui-panel" style="display: none">
+    <div class='interaction-prompt-icon'>
+      <img class='interaction-prompt-icon-idle interaction-prompt-desktop' src="2024-09-27-15-22-03/webwalk/img/pointer.svg"/>
+      <img class='interaction-prompt-icon-pressed interaction-prompt-desktop' src="2024-09-27-15-22-03/webwalk/img/pointer-pressed.svg"/>
+      <img class='interaction-prompt-icon-idle interaction-prompt-mobile' src="2024-09-27-15-22-03/webwalk/img/hand.svg"/>
+      <img class='interaction-prompt-icon-pressed interaction-prompt-mobile' src="2024-09-27-15-22-03/webwalk/img/hand-pressed.svg"/>
+    </div>
+    <div data-strings="help.interactiveDesktop" class='interaction-prompt-indicator-text interaction-prompt-desktop'></div>
+    <div data-strings="help.interactiveMobile" class='interaction-prompt-indicator-text interaction-prompt-mobile'></div>
+  </div>
+
+  <!-- When the help is to be shown automatically during load (#help
+       hash), it is displayed above the primary progress indicator.
+       help-and-primary-progress is a wrapper for these two elements that
+       helps to lay them out consistently. -->
+  <div id="help-and-primary-progress" class="absolute-center">
+
+    <div id="desktop-help" class="help ui-panel" style="display: none">
+      <img id="close-desktop-help-button"
+           class="close-help-button ui-close-hoverable"
+           src="2024-09-27-15-22-03/webwalk/img/close.svg">
+      <div id="desktop-help-switch">
+        <div data-strings="help.basic" id="basic-desktop-help-option">
+        </div><!-- NS = no spaces
+     --><div data-strings="help.advanced" id="advanced-desktop-help-option">
+        </div>
+      </div>
+
+      <div id="desktop-help-content">
+
+        <div id="desktop-basic-help" class="help-columns" style="display: none">
+          <div class="help-column3">
+            <h1 data-strings="help.mouse"></h1>
+            <img src="2024-09-27-15-22-03/webwalk/img/mouse-controls.svg">
+          </div><!-- NS
+       --><div class="help-column3-sep"></div><!-- NS
+       --><div class="help-column3">
+            <h1 data-strings="help.keyboard"></h1>
+            <img src="2024-09-27-15-22-03/webwalk/img/keyboard-controls.svg">
+          </div><!-- NS
+       --><div class="help-column3-sep"></div><!-- NS
+       --><div class="help-column3">
+            <h1 data-strings="help.vrTeleport"></h1>
+            <img src="2024-09-27-15-22-03/webwalk/img/vr-controls.svg">
+          </div>
+        </div>
+
+        <div id="advanced-desktop-help" style="display: none">
+          <h1 data-strings="help.mouse"></h1>
+          <div>
+            <div class="help-how" data-strings="help.holdLeftButton">
+            </div><!-- NS
+         --><div data-strings="help.lookAround" class="help-what"></div>
+          </div>
+          <div>
+            <div class="help-how" data-strings="help.clickLeftButton">
+            </div><!-- NS
+         --><div data-strings="help.walkToClickedPlace" class="viewer-specific help-what">
+            </div><!-- NS
+         --><div data-strings="help.selectMaterialLightObject"
+              class="editor-specific help-what" style="display: none">
+            </div>
+          </div>
+          <div>
+            <div class="help-how" data-strings="help.scroll" ></div><!-- NS
+         --><div data-strings="help.walkStraight" class="help-what"></div>
+          </div>
+          <h1 data-strings="help.keyboard"></h1>
+          <div>
+            <div class="help-how">
+              <div>
+                <div class="help-key-placeholder"></div><!-- NS
+             --><div class="help-key">&#8593;</div><!-- NS
+             --><div class="help-key-placeholder"></div>
+              </div>
+              <div>
+                <div class="help-key">&#8592;</div><!-- NS
+             --><div class="help-key">&#8595;</div><!-- NS
+             --><div class="help-key">&#8594;</div>
+              </div>
+            </div><!-- NS
+         --><div data-strings="help.walkStraightAndLookAround" class="help-what">
+            </div>
+          </div>
+          <div>
+            <div class="help-how">
+              <div>
+                <div class="help-key-placeholder"></div><!-- NS
+             --><div class="help-key">W</div><!-- NS
+             --><div class="help-key-placeholder"></div>
+              </div>
+              <div>
+                <div class="help-key">A</div><!-- NS
+             --><div class="help-key">S</div><!-- NS
+             --><div class="help-key">D</div>
+              </div>
+            </div><!-- NS
+         --><div data-strings="help.walkStraightAndSideways" class="help-what"></div>
+          </div>
+          <div>
+            <div class="help-how">
+              <div class="help-key">PgUp</div><div class="help-key">PgDn</div><!-- NS
+           --><div class="help-key-sep"></div><!-- NS
+           --><div class="help-key">E</div><div class="help-key">Q</div>
+            </div><!-- NS
+         --><div data-strings="help.changeHeight" class="help-what"></div>
+          </div>
+          <div>
+            <div class="help-how">
+              <div class="help-key">1</div>
+              &#8211;
+              <div class="help-key">9</div><!-- NS
+           --><div class="help-key-sep"></div><!-- NS
+           --><div class="help-key">[</div>
+              <div class="help-key">]</div>
+            </div><!-- NS
+       --><div data-strings="help.switchView" class="help-what"></div>
+          </div>
+          <div class="help-how">
+            <div class="help-key">P</div>
+          </div><!-- NS
+       --><div data-strings="help.screenshot" class="help-what"></div>
+          <div class="editor-specific help-how" style="display: none">
+            <div class="help-key">I</div>
+          </div><!-- NS
+       --><div data-strings="help.illuminationPreview" class="editor-specific help-what"
+               style="display: none"></div>
+          <div class="help-how">
+            <div class="help-key">M</div>
+          </div><!-- NS
+       --><div data-strings="help.hideShowMenu" class="help-what"></div>
+          <div class="help-how">
+            <div class="help-key">L</div>
+          </div><!-- NS
+       --><div data-strings="help.hideShowMousePointer" class="help-what"></div>
+
+          <h1 data-strings="help.vrMode"></h1>
+          <div>
+            <div class="help-how">
+              <div data-strings="help.gazeAtFixedPlace"></div>
+              <div data-strings="help.or"></div>
+              <div data-strings="help.clickControllerButton">
+              </div>
+            </div><!-- NS
+         --><div data-strings="help.teleport" class="help-what"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="mobile-help" class="help ui-panel"
+         style="display: none">
+      <img id="close-mobile-help-button"
+           class="close-help-button ui-close-hoverable"
+           src="2024-09-27-15-22-03/webwalk/img/close.svg">
+      <div class="help-columns">
+        <div class="help-column2">
+          <h1 data-strings="help.touch"></h1>
+          <img src="2024-09-27-15-22-03/webwalk/img/touch-controls.svg">
+        </div><!-- NS
+     --><div class="help-column2-sep"></div><!-- NS
+     --><div class="navigation-help-column2">
+          <h1 data-strings="help.vrTeleport"></h1>
+          <img src="2024-09-27-15-22-03/webwalk/img/vr-controls.svg">
+        </div>
+      </div>
+    </div>
+
+    <svg id="primary-progress" viewBox="-58 -58 116 116"
+         style="display: none">
+      <circle cx="0" cy="0" r="50" stroke-width="14">
+      </circle>
+      <circle id="primary-progress-done" cx="0" cy="0" r="50"
+              stroke-width="8" stroke-dasharray="315.159"
+              stroke-dashoffset="314.159" transform="rotate(-90)">
+      </circle>
+    </svg>
+
+  </div>
+
+  <div id="secondary-progress" style="display: none">
+    <div id="secondary-progress-done"></div>
+  </div>
+
+  <div id="ext-html-label"
+       class="ext-popup ui-top ui-left ext-html-label-animated"
+       style="display: none">
+    <div id="ext-html-label-content" class="ext-popup-content"></div><!-- NS
+ --><div id="ext-html-label-close"
+         class="ext-popup-close-button-panel ui-close-hoverable">
+      <div class="ext-popup-close-button"></div>
+    </div>
+  </div>
+
+  <div id="ext-meeting-status" class="ext-popup ui-top ui-left"
+       style="display: none">
+    <div id="ext-meeting-status-content" class="ext-popup-content">
+      <ul id="ext-meeting-who-list" class="ui-scrollbar ext-meeting-who-list">
+      </ul>
+      <div>
+        <button id="ext-meeting-mic-toggle"
+                class="ext-meeting-button ext-meeting-button-highlight">
+          <span class="fa-microphone" style="display: none"></span>
+          <span class="fa-microphone-slash"></span>
+        </button>
+        <button id="ext-meeting-camera-toggle"
+                class="ext-meeting-button ext-meeting-button-highlight">
+          <span class="fa-video" style="display: none"></span>
+          <span class="fa-video-slash"></span>
+        </button>
+        <button id="ext-meeting-pointer" class="ext-meeting-button">
+          <span class="fa-hand-pointer"></span>
+        </button>
+      </div>
+      <div id="ext-meeting-notes-preview" style="display: none">
+        <strong>Notes:</strong>
+        <ul id="ext-meeting-note-list" class="ext-meeting-list">
+        </ul>
+        <button id="ext-meeting-add-note" class="ext-meeting-button">
+          Add note
+        </button>
+      </div>
+      <div id="ext-meeting-status-footer">
+        <span id = ext-meeting-quality-indicator-container>
+        </span>
+        <span>
+          <button id="ext-meeting-leave"
+                  class="ext-meeting-button ext-meeting-button-highlight">
+            Leave meeting
+          </button>
+        </span>
+      </div>
+    </div>
+    <div id="ext-meeting-who-list-folder" class="ui-folder-vertical ui-hoverable ui-panel">
+      <img src="2024-09-27-15-22-03/webwalk/img/fold-vertical.svg">
+    </div>
+  </div>
+  <div id="ext-meeting-camera-preview" style="display: none"></div>
+  
+  
+  
+  
+  
+  <script type="module">
+    WALK.ASSETS_URL = '2024-09-27-15-22-03/';
+  </script>
+<script src="2024-09-27-15-22-03/webwalk/walk.min.js" type="text/javascript"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.2.8/purify.min.js"></script>
+<script>
+    window.html2canvas = html2canvas;
+    const { jsPDF } = window.jspdf;
+    var viewer = WALK.getViewer();
+    var data = [];
+    var tablagenerada = false;
+    viewer.setNodeTypeEditable("00 - COTAS");
+    viewer.setNodeTypeEditable("00 - COTAS001");
+    viewer.setNodeTypeEditable("00 - COTAS002");
+    viewer.setNodeTypeEditable("00 - COTAS 2");
+    viewer.setNodeTypeEditable("00 - COTAS003");
+    viewer.setNodeTypeEditable("00 - COTAS010");
+
+    var ocultarObjs = ["00 - COTAS", "00 - COTAS001", "00 - COTAS002", "00 - COTAS 2", "00 - COTAS003", "00 - COTA010"];
+
+    //////////////////////////////////////////////
+    var hidden = false;
+    
+    function hideMesh() {
+    if (!hidden) {
+        ocultarObjs.forEach(objName => {
+            viewer.findNodesOfType(objName).forEach(node => {
+                node.hide();
+            });
+        });
+        hidden = true;
+        console.log("hidden " + hidden);        
+        document.querySelector('#medidasbtn').innerText = 'Mostrar medidas';
+    } else {
+        ocultarObjs.forEach(objName => {
+            viewer.findNodesOfType(objName).forEach(node => {
+                node.show();
+            });
+        });
+        hidden = false;
+        console.log("hidden " + hidden);
+        document.querySelector('#medidasbtn').innerText = 'Ocultar medidas';
+    }
+    viewer.requestFrame();
+}
+
+    ///////////////////////////////////////////////
+
+    function mostrarPopup(bodega, estado) {
+        // Crear el contenido del popup
+        var popupContent = 
+            `<div style="font-size: 1.2em; padding: 10px;">` +
+            `  <strong>Bodega ${bodega}</strong><br>` +
+            `  Estado: ${estado}` +
+            `</div>`;
+
+        // Abrir el popup con el contenido y centrarlo en pantalla
+        console.log('Mostrando popup para bodega:', bodega, 'Estado:', estado);
+        viewer.openPopup(popupContent, { centerHorizontally: true, centerVertically: true });
+    }
+
+    function anchorClicked(anchorIndex) {
+        console.log('Anchor clickeado:', anchorIndex);
+        const bodegaInfo = data[anchorIndex];
+        console.log('info bodega:', bodegaInfo);
+        if (bodegaInfo) {
+            const bodega = bodegaInfo.bodega;
+            const estado = obtenerEstadoTexto(bodegaInfo.valor); // Obtener estado como texto
+            console.log('Información de bodega:', bodega, 'Estado:', estado);
+            mostrarPopup(bodega, estado); // Mostrar el popup con la información
+        }
+    }
+    
+    function obtenerEstadoTexto(valor) {
+        if (valor === 'disponible') {
+            return "Disponible";
+        } else if (valor === 'ocupado') {
+            return "Ocupado";
+        } else if (valor === 'apartado') {
+            return "Apartado";
+        }
+        return "Desconocido"; 
+    }
+
+    ////////////////////////////////////////////
+
+    function CreateTriggers() {
+       
+        const secretKey = 'midstorageBodegas';
+        const timestamp = Date.now();
+        const payload = JSON.stringify({ timestamp: timestamp, endpoint: '/bodegas/getAll' });
+        const signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);
+     
+
+        fetch('https://soporte.greenfieldteam.net/bodegas/getAll', {
+            method: "GET",
+            headers: {
+                'X-Signature': signature, 
+                'X-Timestamp': timestamp.toString(),
+                "Content-Type": "application/json",
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor: ' + response.status);
+            }
+            console.log(response)
+            return response.json(); 
+        })
+        .then(dataBackend => {
+            data = dataBackend.map(item => ({
+                bodega: item.id, 
+                valor: item.is_in_use 
+            }));
+
+            actualizarAnchors(data);
+        })
+        .catch(error => {
+            console.error('Error al obtener datos del backend:', error);
+        });
+    }
+
+    const posiciones = [
+        [6, 57, 14], [16, 57, 14], [26, 57, 14], [36, 57, 14], [46, 57, 14], [56, 57, 14], [66, 57, 14], // 1-7
+        [45, 105.5, 14], [45, 115.5, 14], [45, 125.5, 14], [45, 135.5, 14], // 8-11
+        [101, 137.5, 14], [101, 127.5, 14], [101, 117.5, 14], [101, 107.5, 14], [101, 97.5, 14], [101, 87.5, 14], [101, 77.5, 14], 
+        [101, 67.5, 14], [101, 57.5, 14], [101, 47.5, 14] // 12-21
+    ];
+
+    function obtenerColor(valor) {
+        if (valor === 'disponible') { 
+            return "#00FF00"; 
+        } else if (valor === 'ocupado') {
+            return "#FF0000"; 
+        } else if (valor === 'apartado') {
+            return "#808080"; 
+        }
+    }
+
+    function actualizarAnchors(data) {
+        data.forEach((bodega, index) => {
+            const nombre = `${bodega.bodega}`; 
+            const color = obtenerColor(bodega.valor);
+            const position = posiciones[index]; 
+
+            var anchorConfig = {
+                position: position,
+                type: 'sphere',
+                radius: 1,
+                text: nombre,
+                color: color
+            };
+
+            viewer.addAnchor(anchorConfig, () => anchorClicked(index));
+        });
+    }
+
+    function sceneReadyToDisplay() {
+        CreateTriggers();
+    }
+
+    viewer.onSceneReadyToDisplay(sceneReadyToDisplay);
+
+    ////////////////////////////////////////////
+
+    var modalOpen =false;
+
+    // Mostrar el cotizador
+    function mostrarCotizador() {
+        const cotizador = document.getElementById('cotizador');
+
+        if(modalOpen== false){
+            cotizador.style.display = 'block';
+            modalOpen = true
+        }else{
+            cotizador.style.display = 'none';
+            modalOpen = false
+        }
+
+        const fechaActualFormateada = obtenerFechaActual();
+        document.getElementById('fechaactual').innerText = fechaActualFormateada;
+    }
+
+    let precioPreventa = 0;
+    let m2 = 0;
+    document.addEventListener("DOMContentLoaded", function() {
+        actualizarInfo();
+        const engancheDifCheckbox = document.getElementById('engancheDif');
+        const enganchDifElement = document.getElementById('enganchediferido');
+        engancheDifCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                enganchDifElement.style.display = 'block'; // Mostrar el enganche diferido
+            } else {
+                enganchDifElement.style.display = 'none'; // Ocultar el enganche diferido
+            }
+        });
+    });
+
+    function obtenerFechaActual() {
+        const fecha = new Date();
+        const dia = fecha.getDate().toString().padStart(2, '0');
+        const mes = (fecha.getMonth() + 1).toString().padStart(2, '0'); // ¡Recuerda que los meses en JavaScript van de 0 a 11!
+        const anio = fecha.getFullYear();
+
+        return `${dia}/${mes}/${anio}`;
+    }
+
+    function actualizarInfo() {
+        const tipoBodega = document.getElementById('tipoBodega').value;
+        if (tipoBodega === 'A') {
+            precioPreventa = 3741000;
+            m2 = 250;
+        } else if (tipoBodega === 'B') {
+            precioPreventa = 7937928;
+            m2 = 429;
+        } else if (tipoBodega === 'C') {
+            precioPreventa = 8113968;
+            m2 = 522;
+        } else if (tipoBodega === 'D') {
+            precioPreventa = 7647648;
+            m2 = 492;
+        }
+        document.getElementById('precioPreventa').innerText = precioPreventa.toLocaleString();
+        document.getElementById('metroscuad').innerText = m2.toLocaleString();
+    }
+
+    function calcular() {
+        const tipoBodega = document.getElementById('tipoBodega').value;
+        const usarApartado = document.getElementById('usarApartado').checked;
+        const porcentajeEnganche1 = parseInt(document.getElementById('enganche1').value);
+        const porcentajeEnganche2 = parseInt(document.getElementById('enganche2').value);
+
+        let apartado = 0;
+
+        // Asignar el valor de apartado dependiendo del tipo de bodega
+        if (usarApartado) {
+            if (tipoBodega === 'A') {
+                apartado = 40000;
+            } else {
+                apartado = 80000;
+            }
+        }
+
+        // Calcular el enganche (porcentaje del precio de preventa - apartado)
+        const enganche1 = (precioPreventa - apartado) * (porcentajeEnganche1 / 100);
+        const enganche2 = (precioPreventa - apartado) * (porcentajeEnganche2 / 100);
+
+        // Calcular el pago final (5% del restante)
+        const pagoFinal = (precioPreventa - apartado) * 0.05;
+
+        // Calcular el total de pagos mensuales (restante dividido en 11 pagos)
+        const restante = precioPreventa - apartado - enganche1 - enganche2 - pagoFinal;
+        const pagoMensual = restante / 11;
+
+        // Generar la tabla de pagos
+        generarTabla(enganche1, enganche2, pagoMensual, pagoFinal);
+    }
+
+    function generarTabla(enganche1, enganche2, pagoMensual, pagoFinal) {
+        const tablaBody = document.getElementById('tablaBody');
+        const tipoBodega = document.getElementById('tipoBodega').value;
+        const usarApartado = document.getElementById('usarApartado').checked;
+        const engancheDif = document.getElementById('engancheDif').checked;
+        let apartado = 0;
+        tablaBody.innerHTML = ''; // Limpiar la tabla
+
+        // Crear fila para el apartado
+        if(usarApartado){
+            if (tipoBodega === 'A') {
+                apartado = 40000;
+            } else {
+                apartado = 80000;
+            }
+
+            tablaBody.innerHTML += `
+            <tr>
+                <td class="col-mensualidad">Apartado</td>
+                <td class="col-mensualidad">20-Sept-2024</td>
+                <td class="col-importe">$${apartado.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            </tr>
+        `;
+        }
+
+        // Crear fila para el enganche 1 y 2
+        tablaBody.innerHTML += `
+            <tr>
+                <td class="col-mensualidad">Enganche (${document.getElementById('enganche1').value}%)</td>
+                <td class="col-mensualidad">20-Oct-2024</td>
+                <td class="col-importe">$${enganche1.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            </tr>
+        `;
+
+        if(engancheDif){
+            tablaBody.innerHTML += `
+                <tr>
+                    <td class="col-mensualidad">Enganche 2 (${document.getElementById('enganche2').value}%)</td>
+                    <td class="col-mensualidad">20-Dic-2024</td>
+                    <td class="col-importe">$${enganche2.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                </tr>
+            `;
+        }
+
+        // Crear filas para los pagos mensuales
+        for (let i = 1; i <= 11; i++) {
+            tablaBody.innerHTML += `
+            <tr>
+                <td class="col-mensualidad">Mensualidad ${i}</td>
+                <td class="col-mensualidad">20-${obtenerMes(i)}-2025</td>
+                <td class="col-importe">$${pagoMensual.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            </tr>
+            `;
+        }
+
+        // Crear fila para el pago final
+        tablaBody.innerHTML += `
+            <tr>
+                <td class="col-mensualidad">Pago Final (5%)</td>
+                <td class="col-mensualidad">20-Dic-2025</td>
+                <td class="col-importe">$${pagoFinal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (Saldo contra entrega)</td>
+            </tr>
+        `;
+
+        // Mostrar la tabla
+        document.getElementById('tablaPagos').style.display = 'table';
+        tablagenerada = true;
+      //document.forms[0].submit();
+    }
+
+    function obtenerMes(indice) {
+        const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sept', 'Oct', 'Nov', 'Dic'];
+        return meses[indice - 1];
+    }
+
+    function descargar() {
+
+        if(tablagenerada == true){
+            const elementsToCapture = [
+                document.getElementById('header'),
+                document.getElementById('form2'),
+                document.getElementById('form'),
+                document.getElementById('bodegaInfo'),
+                document.getElementById('tablaPagos')
+            ];
+
+            const pdf = new jsPDF('p', 'mm', 'a4');
+        /* pdf.setFontSize(18);
+            pdf.text("Cotización", 10, 10);*/
+            
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            const margin = 10;
+            let position = 20; 
+            let pageHeight = pdfHeight - 20; 
+
+        // Función para procesar cada elemento
+            function processElement(element, callback) {
+                html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                }).then((canvas) => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
+                    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                    const imgHeightRatio = imgHeight * ratio;
+
+                    if (imgHeightRatio < pageHeight) {
+                        pdf.addImage(imgData, 'PNG', margin, position, (imgWidth * ratio) - (2 * margin), imgHeightRatio);
+                        position += imgHeightRatio + 2;
+                    } else {
+                        // Múltiples páginas
+                        let yPos = position;
+                        while (yPos < imgHeight) {
+                            pdf.addImage(imgData, 'PNG', margin, yPos - position, (imgWidth * ratio) - (2 * margin), imgHeightRatio);
+                            yPos += pageHeight;
+
+                            if (yPos < imgHeight) {
+                                pdf.addPage();
+                            }
+                        }
+                        position += imgHeightRatio + 2;
+                    }
+                    callback(); // Llamar al callback cuando termine
+                }).catch(function (error) {
+                    console.error("Error al generar la imagen: ", error);
+                    callback(); // Llamar al callback incluso si hay un error
+                });
+            }
+
+            // Procesar todos los elementos en secuencia
+            let currentElementIndex = 0;
+
+            function processNextElement() {
+                if (currentElementIndex < elementsToCapture.length) {
+                    processElement(elementsToCapture[currentElementIndex], () => {
+                        currentElementIndex++;
+                        processNextElement();
+                    });
+                } else {
+                    // Guardar el PDF después de procesar todos los elementos
+                    pdf.save('cotizacion.pdf');
+                }
+            }
+            processNextElement(); // Iniciar el procesamiento
+        }
+
+    }
+    
+</script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #FFFFFF;
+    }
+
+    .title{
+        text-align: right;
+        color: rgb(36, 36, 36);
+        margin-right: 20px;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    #cotizador {
+        padding: 20px;
+        border: 2px solid #000000; 
+        width: 100%;
+        max-width: 1200px;
+        margin-bottom: 20px;
+        overflow-x: auto;
+        overflow-y: auto;
+        height: 80vh;
+        max-height: 900px;
+        background-color: #FFFFFF; 
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    strong {
+        color: #000000; 
+    }
+
+    label {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    table, th, td {
+        border: 1px solid #000000;
+    }
+
+    th {
+        padding: 12px;
+    }
+
+    td {
+        padding: 10px;
+    }
+
+    select {
+        appearance: none;
+        background-color: #FFFFFF;
+        border: none;
+        border-bottom: 2px solid black;
+        outline: none;
+        padding: 10px;
+        font-size: 1em;
+        color: #000000;
+        width: 100%;
+        max-width: 300px;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    select:hover,
+    select:focus {
+        border-color: #000000; 
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); 
+        outline: none;
+    }
+
+    option {
+        background-color: #FFFFFF;
+        color: #000000;
+        padding: 10px;
+    }
+
+    button {
+        background-color: #000000; 
+        color: #FFFFFF; 
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #form2 label{
+        margin-bottom: 10px;
+    }
+
+    #form2 input{
+        border: none;
+        border-bottom: 2px solid black;
+        outline: none;
+        width: 100%;
+        max-width: 300px;
+        font-size: 16px;
+    }
+
+    #tablaPagos {
+        text-align: center;
+        display: none;
+        margin-top: 20px;
+    }
+
+    #tablaBody tr:hover {
+        background-color: #D3D3D3;
+    }
+
+    .btn-cotizar {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        padding: 12px 24px;
+        background-color: #000000; 
+        color: #FFFFFF; 
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+        font-weight: bold;
+    }
+
+    .btn-cotizar:hover {
+        background-color: #EAEAEA; 
+        color: #000000;
+        font-weight: bold;
+    }
+
+    .btn-cotizar:active {
+        background-color: #000000; 
+    }
+
+    .calcularBtn {
+        background-color: #000000; 
+        color: #FFFFFF; 
+        font-size: 16px;
+    }
+
+    .btn-hide {
+        position: fixed;
+        bottom: 20px;
+        left: 200px;
+        padding: 12px 24px;
+        background-color: #000000; 
+        color: #FFFFFF; 
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+        font-weight: bold;
+    }
+
+    .btncontainer {
+        text-align: center;
+    }
+
+    /* Estilos específicos para pantallas pequeñas */
+    @media only screen and (max-width: 768px) {
+        #cotizador {
+            padding: 10px;
+            border: 2px solid #000000;
+            width: 100%;
+            margin-bottom: 20px;
+            height: 80vh;
+            overflow-x: scroll;
+            background-color: #FFFFFF;
+            border-radius: 10px;
+        }
+
+        /**.title{
+            font-size: 18px;
+        }*/
+
+        label, select, button {
+            font-size: 14px;
+        }
+
+        table {
+            font-size: 12px;
+        }
+
+        button, .btn-cotizar, .btn-hide, .calcularBtn {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box; 
+        }
+    }
+
+    /* Ajustes para pantallas de menos de 480px */
+    @media only screen and (max-width: 480px) {
+        #cotizador {
+            padding: 5px;
+            height: 80vh;
+            left: 0px !important;
+        }
+
+       /* .title{
+            font-size: 16px;
+        }*/
+
+        label, select, button {
+            font-size: 12px;
+        }
+
+        table {
+            font-size: 10px;
+        }
+
+        button, .btn-cotizar, .btn-hide, .calcularBtn {
+            width: 30vw;
+            box-sizing: border-box;
+            font-size: 12px;
+        }
+
+        .btn-hide{
+            left: 160px;
+        }
+    }
+</style>
+
+<style>
+    /* Estilo para las columnas de mensualidad y fecha */
+    .col-mensualidad {
+        background-color: white;
+        color: black;
+    }
+
+    /* Estilo para la columna de importe */
+    .col-importe {
+        background-color: rgb(36, 36, 36);
+        color: white;
+    }
+
+    /* Estilo para las celdas de encabezado (th) */
+    th.col-mensualidad {
+        background-color: white;
+        color: black;
+    }
+
+    th.col-importe {
+        background-color: rgb(36, 36, 36);;
+        color: white;
+    }
+</style>
+
+<!-- Botón para abrir el cotizador -->
+<button onclick="mostrarCotizador()" class="btn-cotizar">
+    Cotización
+</button>
+<button onclick="hideMesh()" class="btn-hide" id="medidasbtn">
+    Ocultar medidas
+</button>
+
+<!-- Contenedor del cotizador -->
+<div id="cotizador" style="color: black; display: none; position: fixed; bottom: 50px; left: 20px; background-color: rgba(255, 255, 255, 1); padding: 20px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0,0,0,0.2);">
+    <div id="header">
+        <img src="https://recorridos.greenfieldteam.net/pdf-head.png">
+        <p class="title">Cotización</p>
+        <div style="float: right;"><strong> Fecha: </strong><p id="fechaactual" style="display: inline-block"></p></div>
+        
+    </div>
+    <!--form action="https://formspree.io/f/xkgwdjpg" method="POST"-->
+        <div id="form2">
+            <label>
+                <strong>Nombre:</strong>
+                <input id="nombre" type="text" placeholder="Ingresa tu nombre">
+            </label>
+            <br>
+            <label>
+                <strong>Correo:</strong>
+                <input id="correo" type="email" placeholder="Ingresa tu correo electrónico">
+            </label>
+            <br>
+            <label>
+                <strong>Teléfono:</strong>
+                <input id="telefono" type="tel" placeholder="Ingresa tu número de teléfono">
+            </label>
+        </div>        <div id="form">
+        <label>
+                <strong> Tipo de Bodega:</strong>
+                <select id="tipoBodega" onchange="actualizarInfo()">
+                    <option value="A" selected="selected">Bodega A</option>
+                    <option value="B">Bodega B</option>
+                    <option value="C">Bodega C</option>
+                    <option value="D">Bodega D</option>
+                </select>
+            </label>
+        </div>
+    <!--/form-->
+
+    <div id="bodegaInfo">
+        <label>
+            <strong> M<sup>2</sup>: </strong><span id="metroscuad"></span> m<sup>2</sup>        
+        </label>
+
+        <label>
+            <strong> Precio: $</strong><span id="precioPreventa"></span>        
+        </label>    
+
+        <div style="display: inline-flex;">
+            <label style="margin-right: 20px;"> 
+                <input type="checkbox" id="usarApartado">
+                Dar apartado
+            </label>
+            <label>
+                <input type="checkbox" id="engancheDif">
+                Enganche diferido
+            </label>
+        </div>
+
+        <label>
+            <strong> Enganche:</strong>
+            <select id="enganche1">
+                <option value="10">10%</option>
+                <option value="15">15%</option>
+                <option value="20" selected="selected">20%</option>
+                <option value="25">25%</option>
+                <option value="30">30%</option>
+            </select>
+        </label>
+
+        <label id="enganchediferido" style="display: none;">
+            <strong> Enganche 2:</strong>
+            <select id="enganche2">
+                <option value="10">10%</option>
+                <option value="15">15%</option>
+                <option value="20">20%</option>
+                <option value="25">25%</option>
+                <option value="30">30%</option>
+            </select>
+        </label>
+    </div>
+
+    <div class="btncontainer">
+        <button onclick="calcular()" class="calcularBtn">Calcular</button>
+        <button onclick="descargar()" class="calcularBtn">Descargar</button>
+        <button class="calcularBtn" onclick="window.location.href='https://midstorage.com/';">Ir a la página</button>
+        <br><br>
+    </div>
+
+    <table id="tablaPagos" style="display: none;">
+        <thead>
+            <tr>
+                <th class="col-mensualidad">MENSUALIDAD</th>
+                <th class="col-mensualidad">FECHA</th>
+                <th class="col-importe">IMPORTE</th>
+            </tr>
+        </thead>
+        <tbody id="tablaBody">
+            <!-- Aquí se generarán los pagos -->
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
