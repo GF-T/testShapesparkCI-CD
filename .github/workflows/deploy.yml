@@ -1,0 +1,27 @@
+name: Deploy to Namecheap
+
+on:
+  push:
+    branches:
+      - main  # Puedes cambiar la rama según sea necesario
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3  # Extrae el código de la rama
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.3  # Configura la clave SSH privada para la autenticación
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Debes haber configurado esta clave en GitHub Secrets
+
+    - name: Upload project to Namecheap
+      run: |
+        # Elimina el contenido actual en el directorio del servidor remoto
+        ssh -o StrictHostKeyChecking=no greesvkm@recorridos.greenfieldteam.net "rm -rf /home/greesvkm/public_html/midstorage/*"
+        
+        # Sube el contenido del proyecto a la carpeta especificada en el servidor
+        scp -r ./your_project_folder/* greesvkm@recorridos.greenfieldteam.net:/home/greesvkm/public_html/midstorage/
