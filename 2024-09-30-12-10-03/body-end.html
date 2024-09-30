@@ -253,6 +253,7 @@
 
         // Generar la tabla de pagos
         generarTabla(enganche1, enganche2, pagoMensual, pagoFinal);
+     //   document.getElementById('contact-form').submit();
     }
 
     function generarTabla(enganche1, enganche2, pagoMensual, pagoFinal) {
@@ -322,7 +323,6 @@
         // Mostrar la tabla
         document.getElementById('tablaPagos').style.display = 'table';
         tablagenerada = true;
-      //document.forms[0].submit();
     }
 
     function obtenerMes(indice) {
@@ -331,60 +331,65 @@
     }
 
     function descargar() {
+    if (tablagenerada === true) {
+        const elementsToCapture = [
+            document.getElementById('header'),
+            document.getElementById('form2'),
+            document.getElementById('form'),
+            document.getElementById('bodegaInfo'),
+            document.getElementById('tablaPagos')
+        ];
 
-        if(tablagenerada == true){
-            const elementsToCapture = [
-                document.getElementById('header'),
-                document.getElementById('form2'),
-                document.getElementById('form'),
-                document.getElementById('bodegaInfo'),
-                document.getElementById('tablaPagos')
-            ];
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth() - 20; // Ajustar el ancho del PDF considerando márgenes
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const margin = 10;
+        let position = 10; // Posición inicial
+        const pageHeight = pdfHeight - 20; // Altura disponible de la página
 
-            const pdf = new jsPDF('p', 'mm', 'a4');
-        /* pdf.setFontSize(18);
-            pdf.text("Cotización", 10, 10);*/
-            
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
-            const margin = 10;
-            let position = 20; 
-            let pageHeight = pdfHeight - 20; 
+        // Escala para reducir el tamaño de los elementos
+        const scaleFactor = 0.75; // Ajusta este valor si necesitas más o menos reducción
 
         // Función para procesar cada elemento
-            function processElement(element, callback) {
-                html2canvas(element, {
-                    scale: 2,
-                    useCORS: true,
-                }).then((canvas) => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const imgWidth = canvas.width;
-                    const imgHeight = canvas.height;
-                    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-                    const imgHeightRatio = imgHeight * ratio;
+        function processElement(element, callback) {
+            // Aplicar la escala al elemento
+            const originalTransform = element.style.transform;
+            element.style.transform = `scale(${scaleFactor})`;
+            element.style.transformOrigin = 'top left';
 
-                    if (imgHeightRatio < pageHeight) {
-                        pdf.addImage(imgData, 'PNG', margin, position, (imgWidth * ratio) - (2 * margin), imgHeightRatio);
-                        position += imgHeightRatio + 2;
-                    } else {
-                        // Múltiples páginas
-                        let yPos = position;
-                        while (yPos < imgHeight) {
-                            pdf.addImage(imgData, 'PNG', margin, yPos - position, (imgWidth * ratio) - (2 * margin), imgHeightRatio);
-                            yPos += pageHeight;
+            // Capturar el elemento con html2canvas
+            html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+            }).then((canvas) => {
+                // Restaurar el estilo original del elemento
+                element.style.transform = originalTransform;
 
-                            if (yPos < imgHeight) {
-                                pdf.addPage();
-                            }
-                        }
-                        position += imgHeightRatio + 2;
-                    }
-                    callback(); // Llamar al callback cuando termine
-                }).catch(function (error) {
-                    console.error("Error al generar la imagen: ", error);
-                    callback(); // Llamar al callback incluso si hay un error
-                });
-            }
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = (canvas.width * scaleFactor) / 2; // Ajustar el ancho según la escala y el factor de html2canvas
+                const imgHeight = (canvas.height * scaleFactor) / 2; // Ajustar la altura según la escala y el factor de html2canvas
+                const ratio = Math.min(pdfWidth / imgWidth, pageHeight / imgHeight);
+
+                // Calcular dimensiones ajustadas al PDF
+                const adjustedWidth = imgWidth * ratio;
+                const adjustedHeight = imgHeight * ratio;
+
+                // Si la imagen no cabe en la página actual, agregar una nueva página
+                if (position + adjustedHeight > pageHeight) {
+                    pdf.addPage();
+                    position = 10; // Reiniciar la posición al inicio de la nueva página
+                }
+
+                // Añadir la imagen al PDF asegurándose de no exceder el ancho de la página
+                pdf.addImage(imgData, 'PNG', margin, position, adjustedWidth, adjustedHeight);
+                position += adjustedHeight + 2; // Actualizar la posición para el siguiente elemento
+
+                callback(); // Llamar al callback cuando termine
+            }).catch(function (error) {
+                console.error("Error al generar la imagen: ", error);
+                callback(); // Llamar al callback incluso si hay un error
+            });
+        }
 
             // Procesar todos los elementos en secuencia
             let currentElementIndex = 0;
@@ -402,7 +407,6 @@
             }
             processNextElement(); // Iniciar el procesamiento
         }
-
     }
     
 </script>
@@ -591,6 +595,10 @@
             border-radius: 10px;
         }
 
+        #headerimg{
+            width: 100%;
+        }
+
         /**.title{
             font-size: 18px;
         }*/
@@ -616,6 +624,10 @@
             padding: 5px;
             height: 80vh;
             left: 0px !important;
+        }
+
+        #headerimg{
+            width: 100%;
         }
 
        /* .title{
@@ -678,28 +690,29 @@
 <!-- Contenedor del cotizador -->
 <div id="cotizador" style="color: black; display: none; position: fixed; bottom: 50px; left: 20px; background-color: rgba(255, 255, 255, 1); padding: 20px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0,0,0,0.2);">
     <div id="header">
-        <img src="https://recorridos.greenfieldteam.net/pdf-head.png">
+        <img src="$EXTRA_ASSETS/pdf-head.png" id="headerimg">
         <p class="title">Cotización</p>
         <div style="float: right;"><strong> Fecha: </strong><p id="fechaactual" style="display: inline-block"></p></div>
-        
+        <br><br>
     </div>
-    <!--form action="https://formspree.io/f/xkgwdjpg" method="POST"-->
+    <form id="contact-form" action="send-email.php" method="POST">
         <div id="form2">
             <label>
                 <strong>Nombre:</strong>
-                <input id="nombre" type="text" placeholder="Ingresa tu nombre">
+                <input id="nombre" type="text" name="nombre" placeholder="Ingresa tu nombre">
             </label>
             <br>
             <label>
                 <strong>Correo:</strong>
-                <input id="correo" type="email" placeholder="Ingresa tu correo electrónico">
+                <input id="correo" type="email" name="email" placeholder="Ingresa tu correo electrónico">
             </label>
             <br>
             <label>
                 <strong>Teléfono:</strong>
-                <input id="telefono" type="tel" placeholder="Ingresa tu número de teléfono">
+                <input id="telefono" type="tel" name="phone" placeholder="Ingresa tu número de teléfono">
             </label>
-        </div>        <div id="form">
+        </div>        
+    <div id="form">
         <label>
                 <strong> Tipo de Bodega:</strong>
                 <select id="tipoBodega" onchange="actualizarInfo()">
@@ -710,7 +723,7 @@
                 </select>
             </label>
         </div>
-    <!--/form-->
+    </form>
 
     <div id="bodegaInfo">
         <label>
@@ -753,8 +766,9 @@
                 <option value="30">30%</option>
             </select>
         </label>
+        <br><br>
     </div>
-
+    
     <div class="btncontainer">
         <button onclick="calcular()" class="calcularBtn">Calcular</button>
         <button onclick="descargar()" class="calcularBtn">Descargar</button>
