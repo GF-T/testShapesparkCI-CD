@@ -8,11 +8,11 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="description" content="Interactive 3D walkthrough">
 
-  <link rel="icon" href="2024-09-30-12-10-03/favicon.ico">
+  <link rel="icon" href="2024-09-30-12-38-22/favicon.ico">
 
-  <meta property="og:image" content="2024-09-30-12-10-03/thumbnail.jpg" />
+  <meta property="og:image" content="2024-09-30-12-38-22/thumbnail.jpg" />
 
-  <link href="2024-09-30-12-10-03/webwalk/style.css" rel="stylesheet" type="text/css">
+  <link href="2024-09-30-12-38-22/webwalk/style.css" rel="stylesheet" type="text/css">
 
   <style>
     @font-face {
@@ -20,8 +20,8 @@
       font-style: normal;
       font-weight: 400;
       src: local('Open Sans'), local('OpenSans'),
-      url('2024-09-30-12-10-03/webwalk/font/open-sans-v28-vietnamese_latin-ext_latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('2024-09-30-12-10-03/webwalk/font/open-sans-v28-vietnamese_latin-ext_latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+      url('2024-09-30-12-38-22/webwalk/font/open-sans-v28-vietnamese_latin-ext_latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('2024-09-30-12-38-22/webwalk/font/open-sans-v28-vietnamese_latin-ext_latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
     }
 
     /* Original font awesome font-family names have been replaced to not rely on
@@ -31,25 +31,25 @@
 
     @font-face {
       font-family: 'FontAwesomeBrands';
-      src: url("2024-09-30-12-10-03/webwalk/font/fa-brands-400.woff2") format("woff2"),
-           url("2024-09-30-12-10-03/webwalk/font/fa-brands-400.woff") format("woff"); }
+      src: url("2024-09-30-12-38-22/webwalk/font/fa-brands-400.woff2") format("woff2"),
+           url("2024-09-30-12-38-22/webwalk/font/fa-brands-400.woff") format("woff"); }
 
     @font-face {
       font-family: 'FontAwesomeRegular';
-      src: url("2024-09-30-12-10-03/webwalk/font/fa-regular-400.woff2") format("woff2"),
-           url("2024-09-30-12-10-03/webwalk/font/fa-regular-400.woff") format("woff"); }
+      src: url("2024-09-30-12-38-22/webwalk/font/fa-regular-400.woff2") format("woff2"),
+           url("2024-09-30-12-38-22/webwalk/font/fa-regular-400.woff") format("woff"); }
 
     @font-face {
       font-family: 'FontAwesomeSolid';
-      src: url("2024-09-30-12-10-03/webwalk/font/fa-solid-900.woff2") format("woff2"),
-           url("2024-09-30-12-10-03/webwalk/font/fa-solid-900.woff") format("woff"); }
+      src: url("2024-09-30-12-38-22/webwalk/font/fa-solid-900.woff2") format("woff2"),
+           url("2024-09-30-12-38-22/webwalk/font/fa-solid-900.woff") format("woff"); }
 
     #cover-image {
-      background-image: url("2024-09-30-12-10-03/cover.jpg");
+      background-image: url("2024-09-30-12-38-22/cover.jpg");
     }
 
     .ext-popup-close-button {
-      background-image: url("2024-09-30-12-10-03/webwalk/img/close.svg");
+      background-image: url("2024-09-30-12-38-22/webwalk/img/close.svg");
     }
   </style>
 
@@ -117,7 +117,7 @@
     <div id="menu-bar-slide">
       <div id="menu-bar-folder" class="menu-item ui-hoverable ui-panel"
            style="display: none">
-        <img src="2024-09-30-12-10-03/webwalk/img/fold-horizontal.svg">
+        <img src="2024-09-30-12-38-22/webwalk/img/fold-horizontal.svg">
       </div><!-- NS
    --><div id="menu-bar-content">
         <div id="menu-buttons" style="display: none">
@@ -128,12 +128,12 @@
        --><div id="minimap-button-toggle"
                class="menu-button menu-item ui-hoverable ui-panel"
                style="display:none">
-            <img src="2024-09-30-12-10-03/webwalk/img/map.svg">
+            <img src="2024-09-30-12-38-22/webwalk/img/map.svg">
           </div><!-- NS
        --><div id="tour-button"
                class="menu-button menu-item ui-hoverable ui-panel"
                style="display: none">
-            <img src="2024-09-30-12-10-03/webwalk/img/tour.svg">
+            <img src="2024-09-30-12-38-22/webwalk/img/tour.svg">
           </div><!-- NS
        --><div id="vr-button"
                class="vr-specific menu-button menu-item ui-hoverable ui-panel"
@@ -144,13 +144,13 @@
                class="fullscreen-specific menu-button menu-item ui-hoverable
                       ui-panel"
                style="display: none">
-            <img src="2024-09-30-12-10-03/webwalk/img/fullscreen.svg">
+            <img src="2024-09-30-12-38-22/webwalk/img/fullscreen.svg">
           </div>
         </div><!-- NS
      --><a id="engine-logo" class="menu-item ui-panel" style="display: none"
            href="https://www.shapespark.com" target="_blank">
           <div id="engine-logo-text" style="display: none"></div><!-- NS
-       --><img src="2024-09-30-12-10-03/webwalk/img/shapespark-logo.svg">
+       --><img src="2024-09-30-12-38-22/webwalk/img/shapespark-logo.svg">
         </a>
       </div>
     </div>
@@ -162,7 +162,7 @@
         <div class="view ui-hoverable ui-panel"></div>
       </div>
       <div id="view-list-folder" class="ui-folder-vertical ui-hoverable ui-panel">
-        <img src="2024-09-30-12-10-03/webwalk/img/fold-vertical.svg">
+        <img src="2024-09-30-12-38-22/webwalk/img/fold-vertical.svg">
       </div>
     </div>
   </div>
@@ -170,13 +170,13 @@
   <div id="minimap-container" class="minimap-container-default" style="display: none">
     <div id="minimap-wrapper" class="minimap-wrapper-default">
       <div id="minimap-button-close" class="minimap-button minimap-button-close">
-        <img src="2024-09-30-12-10-03/webwalk/img/close.svg">
+        <img src="2024-09-30-12-38-22/webwalk/img/close.svg">
       </div>
       <div id="minimap-button-minimize" class="minimap-button minimap-button-minimize">
-        <img src="2024-09-30-12-10-03/webwalk/img/minimize.svg">
+        <img src="2024-09-30-12-38-22/webwalk/img/minimize.svg">
       </div>
       <div id="minimap-button-maximize" class="minimap-button minimap-button-maximize">
-        <img src="2024-09-30-12-10-03/webwalk/img/maximize.svg">
+        <img src="2024-09-30-12-38-22/webwalk/img/maximize.svg">
       </div>
       <div id="minimap-content-wrapper" class="minimap-content-wrapper">
         <div id="minimap-content" class="minimap-content"></div>
@@ -190,57 +190,57 @@
       <div class="view-mode-container">
         <div id="view-mode-top"
              class="menu-item view-mode-item ui-hoverable ui-panel">
-          <img src="2024-09-30-12-10-03/webwalk/img/view-mode-top.svg">
+          <img src="2024-09-30-12-38-22/webwalk/img/view-mode-top.svg">
         </div>
         <div id="view-mode-front"
              class="menu-item view-mode-item ui-hoverable ui-panel">
-          <img src="2024-09-30-12-10-03/webwalk/img/view-mode-front.svg">
+          <img src="2024-09-30-12-38-22/webwalk/img/view-mode-front.svg">
         </div>
         <div id="view-mode-left"
              class="menu-item view-mode-item ui-hoverable ui-panel">
-          <img src="2024-09-30-12-10-03/webwalk/img/view-mode-left.svg">
+          <img src="2024-09-30-12-38-22/webwalk/img/view-mode-left.svg">
         </div>
         <div id="view-mode-fps"
              class="menu-item view-mode-item ui-hoverable ui-panel">
-          <img src="2024-09-30-12-10-03/webwalk/img/view-mode-fps.svg">
+          <img src="2024-09-30-12-38-22/webwalk/img/view-mode-fps.svg">
         </div>
       </div>
       <div class="view-mode-container">
         <div id="view-mode-persp"
              class="menu-item view-mode-item ui-hoverable ui-panel">
-          <img src="2024-09-30-12-10-03/webwalk/img/view-mode-persp.svg">
+          <img src="2024-09-30-12-38-22/webwalk/img/view-mode-persp.svg">
         </div>
         <div id="view-mode-ortho"
              class="menu-item view-mode-item ui-hoverable ui-panel">
-          <img src="2024-09-30-12-10-03/webwalk/img/view-mode-ortho.svg">
+          <img src="2024-09-30-12-38-22/webwalk/img/view-mode-ortho.svg">
         </div>
       </div>
       <div class="view-mode-container">
         <div id="view-mode-color"
              class="menu-item view-mode-item ui-hoverable ui-panel">
-          <img src="2024-09-30-12-10-03/webwalk/img/view-mode-color.svg">
+          <img src="2024-09-30-12-38-22/webwalk/img/view-mode-color.svg">
         </div>
         <div id="view-mode-wireframe-opaque"
              class="menu-item view-mode-item ui-hoverable ui-panel">
-          <img src="2024-09-30-12-10-03/webwalk/img/view-mode-wireframe-opaque.svg">
+          <img src="2024-09-30-12-38-22/webwalk/img/view-mode-wireframe-opaque.svg">
         </div>
         <div id="view-mode-wireframe-transparent"
              class="menu-item view-mode-item ui-hoverable ui-panel">
-          <img src="2024-09-30-12-10-03/webwalk/img/view-mode-wireframe-transparent.svg">
+          <img src="2024-09-30-12-38-22/webwalk/img/view-mode-wireframe-transparent.svg">
         </div>
       </div>
     </div>
   </div>
 
-  <img id="play-button" class="absolute-center" src="2024-09-30-12-10-03/webwalk/img/play.svg"
+  <img id="play-button" class="absolute-center" src="2024-09-30-12-38-22/webwalk/img/play.svg"
        style="display: none">
 
   <div id='interaction-prompt' class="ui-all-center ui-panel" style="display: none">
     <div class='interaction-prompt-icon'>
-      <img class='interaction-prompt-icon-idle interaction-prompt-desktop' src="2024-09-30-12-10-03/webwalk/img/pointer.svg"/>
-      <img class='interaction-prompt-icon-pressed interaction-prompt-desktop' src="2024-09-30-12-10-03/webwalk/img/pointer-pressed.svg"/>
-      <img class='interaction-prompt-icon-idle interaction-prompt-mobile' src="2024-09-30-12-10-03/webwalk/img/hand.svg"/>
-      <img class='interaction-prompt-icon-pressed interaction-prompt-mobile' src="2024-09-30-12-10-03/webwalk/img/hand-pressed.svg"/>
+      <img class='interaction-prompt-icon-idle interaction-prompt-desktop' src="2024-09-30-12-38-22/webwalk/img/pointer.svg"/>
+      <img class='interaction-prompt-icon-pressed interaction-prompt-desktop' src="2024-09-30-12-38-22/webwalk/img/pointer-pressed.svg"/>
+      <img class='interaction-prompt-icon-idle interaction-prompt-mobile' src="2024-09-30-12-38-22/webwalk/img/hand.svg"/>
+      <img class='interaction-prompt-icon-pressed interaction-prompt-mobile' src="2024-09-30-12-38-22/webwalk/img/hand-pressed.svg"/>
     </div>
     <div data-strings="help.interactiveDesktop" class='interaction-prompt-indicator-text interaction-prompt-desktop'></div>
     <div data-strings="help.interactiveMobile" class='interaction-prompt-indicator-text interaction-prompt-mobile'></div>
@@ -255,7 +255,7 @@
     <div id="desktop-help" class="help ui-panel" style="display: none">
       <img id="close-desktop-help-button"
            class="close-help-button ui-close-hoverable"
-           src="2024-09-30-12-10-03/webwalk/img/close.svg">
+           src="2024-09-30-12-38-22/webwalk/img/close.svg">
       <div id="desktop-help-switch">
         <div data-strings="help.basic" id="basic-desktop-help-option">
         </div><!-- NS = no spaces
@@ -268,17 +268,17 @@
         <div id="desktop-basic-help" class="help-columns" style="display: none">
           <div class="help-column3">
             <h1 data-strings="help.mouse"></h1>
-            <img src="2024-09-30-12-10-03/webwalk/img/mouse-controls.svg">
+            <img src="2024-09-30-12-38-22/webwalk/img/mouse-controls.svg">
           </div><!-- NS
        --><div class="help-column3-sep"></div><!-- NS
        --><div class="help-column3">
             <h1 data-strings="help.keyboard"></h1>
-            <img src="2024-09-30-12-10-03/webwalk/img/keyboard-controls.svg">
+            <img src="2024-09-30-12-38-22/webwalk/img/keyboard-controls.svg">
           </div><!-- NS
        --><div class="help-column3-sep"></div><!-- NS
        --><div class="help-column3">
             <h1 data-strings="help.vrTeleport"></h1>
-            <img src="2024-09-30-12-10-03/webwalk/img/vr-controls.svg">
+            <img src="2024-09-30-12-38-22/webwalk/img/vr-controls.svg">
           </div>
         </div>
 
@@ -389,16 +389,16 @@
          style="display: none">
       <img id="close-mobile-help-button"
            class="close-help-button ui-close-hoverable"
-           src="2024-09-30-12-10-03/webwalk/img/close.svg">
+           src="2024-09-30-12-38-22/webwalk/img/close.svg">
       <div class="help-columns">
         <div class="help-column2">
           <h1 data-strings="help.touch"></h1>
-          <img src="2024-09-30-12-10-03/webwalk/img/touch-controls.svg">
+          <img src="2024-09-30-12-38-22/webwalk/img/touch-controls.svg">
         </div><!-- NS
      --><div class="help-column2-sep"></div><!-- NS
      --><div class="navigation-help-column2">
           <h1 data-strings="help.vrTeleport"></h1>
-          <img src="2024-09-30-12-10-03/webwalk/img/vr-controls.svg">
+          <img src="2024-09-30-12-38-22/webwalk/img/vr-controls.svg">
         </div>
       </div>
     </div>
@@ -469,7 +469,7 @@
       </div>
     </div>
     <div id="ext-meeting-who-list-folder" class="ui-folder-vertical ui-hoverable ui-panel">
-      <img src="2024-09-30-12-10-03/webwalk/img/fold-vertical.svg">
+      <img src="2024-09-30-12-38-22/webwalk/img/fold-vertical.svg">
     </div>
   </div>
   <div id="ext-meeting-camera-preview" style="display: none"></div>
@@ -479,9 +479,9 @@
   
   
   <script type="module">
-    WALK.ASSETS_URL = '2024-09-30-12-10-03/';
+    WALK.ASSETS_URL = '2024-09-30-12-38-22/';
   </script>
-<script src="2024-09-30-12-10-03/webwalk/walk.min.js" type="text/javascript"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="2024-09-30-12-38-22/webwalk/walk.min.js" type="text/javascript"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.2.8/purify.min.js"></script>
@@ -736,7 +736,7 @@
 
         // Generar la tabla de pagos
         generarTabla(enganche1, enganche2, pagoMensual, pagoFinal);
-     //   document.getElementById('contact-form').submit();
+        document.getElementById('contact-form').submit();
     }
 
     function generarTabla(enganche1, enganche2, pagoMensual, pagoFinal) {
@@ -1173,7 +1173,7 @@
 <!-- Contenedor del cotizador -->
 <div id="cotizador" style="color: black; display: none; position: fixed; bottom: 50px; left: 20px; background-color: rgba(255, 255, 255, 1); padding: 20px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0,0,0,0.2);">
     <div id="header">
-        <img src="2024-09-30-12-10-03/extra-assets/pdf-head.png" id="headerimg">
+        <img src="2024-09-30-12-38-22/extra-assets/pdf-head.png" id="headerimg">
         <p class="title">Cotización</p>
         <div style="float: right;"><strong> Fecha: </strong><p id="fechaactual" style="display: inline-block"></p></div>
         <br><br>
